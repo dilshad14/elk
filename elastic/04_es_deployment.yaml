@@ -1,0 +1,34 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  selector:
+    matchLabels:
+      run: elasticsearch
+  template:
+    metadata:
+      labels:
+        name: elasticsearch
+        run: elasticsearch
+    spec:
+      containers:
+      - image: docker.elastic.co/elasticsearch/elasticsearch:7.6.2
+        name: elasticsearch
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9200
+          protocol: TCP
+        volumeMounts:
+          - name: elastic-config
+            mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+            subPath: elasticsearch.yml
+          - name: vol-claim
+            mountPath: /es_data/
+      volumes:
+      - name: elastic-config
+        configMap:
+          name: elastic-config
+      - name: vol-claim
+        persistentVolumeClaim: 
+          claimName: local-vol-claim

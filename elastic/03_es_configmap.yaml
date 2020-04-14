@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    product: k8s-elastic
+  name: elastic-config
+data:
+  elasticsearch.yml: |
+    discovery.type: single-node
+    path.logs: /es_data
+    path.data: /es_data

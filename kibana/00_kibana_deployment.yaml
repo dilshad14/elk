@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana-logging
+  labels:
+    k8s-app: kibana-logging
+    addonmanager.kubernetes.io/mode: Reconcile
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kibana-logging
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana-logging
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: 'docker/default'
+    spec:
+      containers:
+      - name: kibana-logging
+        image: docker.elastic.co/kibana/kibana:7.6.2
+        resources:
+          # need more cpu upon initialization, therefore burstable class
+          limits:
+            cpu: 150m
+          requests:
+            cpu: 150m
+        env:
+          - name: ELASTICSEARCH_HOSTS
+            value: http://LAPTOP-VV56MOTG:30010
+          - name: SERVER_NAME
+            value: kibana-logging
+          - name: SERVER_BASEPATH
+            value: /api/v1/services/kibana-logging/proxy
+          - name: SERVER_REWRITEBASEPATH
+            value: "false"
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP
